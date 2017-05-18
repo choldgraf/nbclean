@@ -1,3 +1,4 @@
+nbclean
 setuptools
 nbformat
 numpy
