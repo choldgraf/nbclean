@@ -1,0 +1,6 @@
+setuptools
+nbformat
+numpy
+nbgrader
+matplotlib
+tqdm
