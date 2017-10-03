@@ -32,6 +32,8 @@ class ClearCells(NbGraderPreprocessor):
     """
 
     output = Bool(True)
+    output_image = Bool(False)
+    output_text = Bool(False)
     content = Bool(False)
     stderr = Bool(True)
     tag = Unicode('None')
@@ -44,10 +46,28 @@ class ClearCells(NbGraderPreprocessor):
                 if self.tag not in tags:
                     continue
 
-            # Clear cell output
+            # Clear all cell output
             if self.output is True:
                 if 'outputs' in cell.keys():
                     cell['outputs'] = []
+
+            # Clear cell text output
+            if self.output_text is True:
+                if 'outputs' in cell.keys():
+                    for output in cell['outputs']:
+                        data = output.get('data', {})
+                        for key in list(data.keys()):
+                            if 'text/' in key:
+                                data.pop(key)
+
+            # Clear cell image output
+            if self.output_image is True:
+                if 'outputs' in cell.keys():
+                    for output in cell['outputs']:
+                        data = output.get('data', {})
+                        for key in list(data.keys()):
+                            if 'image/' in key:
+                                data.pop(key)
 
             # Clear cell content
             if self.content is True:
