@@ -25,24 +25,31 @@ class NotebookCleaner(object):
             s += '\n' + str(pre)
         return s
 
-    def clear(self, output=False, content=False, stderr=False, tag=None):
+    def clear(self, content=False, output=False, output_image=False,
+              output_text=False, stderr=False, tag=None):
         """Clear the components of a notebook cell.
 
         Parameters
         ----------
-        output : bool
-            Whether to clear the output of cells.
         content : bool
             Whether to clear the content of cells.
+        output : bool
+            Whether to clear the entire output of cells.
+        output_text : bool
+            Whether to clear the text output of cells.
+        output_image : bool
+            Whether to clear the image output of cells.
         stderr : bool
             Whether to clear the stderr of cells.
         tag : string | None
-            Only apply clearing to cells with a certain tag.
+            Only apply clearing to cells with a certain tag. If
+            None, apply clearing to all cells.
         """
-        if not any([output, content, stderr]):
+        if not any([output, output_image, output_text, content, stderr]):
             raise ValueError("At least of the clear options must be True.")
         # See if the cell matches the string
-        pre = ClearCells(output=output, content=content,
+        pre = ClearCells(content=content, output=output,
+                         output_text=output_text, output_image=output_image,
                          stderr=stderr, tag=str(tag))
         self.ntbk = pre.preprocess(self.ntbk, {})[0]
         self.preprocessors.append(pre)
