@@ -32,6 +32,6 @@ Additionally, you can give it a try yourself by clicking the Binder button below
 
 ## Thanks
 
-Thanks to @jhamrick and the [nbgrader](https://github.com/jupyter/nbgrader) project, which was
+Thanks to [jhamrick](https://github.com/jhamrick) and the [nbgrader](https://github.com/jupyter/nbgrader) project, which was
 the initial inspiration for this. You should check it out if you want a more fully-featured
 grading solution!
