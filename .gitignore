@@ -103,3 +103,7 @@ ENV/
 # Custom files
 *notebook_saved.ipynb
 executed_notebooks/
+
+
+# Documentation
+doc/_build/

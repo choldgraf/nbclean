@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 #
-# Copyright (C) 2015 Chris Holdgraf
-# <choldgraf@gmail.com>
+# Copyright (C) 2017 Chris Holdgraf
+# <choldgraf@berkeley.edu>
 #
 # Adapted from MNE-Python
 
@@ -47,5 +47,6 @@ if __name__ == "__main__":
                        'Operating System :: OSX'],
           platforms='any',
           packages=['nbclean'],
+          install_requires=["nbformat", "nbgrader", "numpy", "tqdm"],
           package_data={},
           scripts=[])
