@@ -29,3 +29,9 @@ corresponding [nbclean notebook that modifies it](examples/modify_notebooks.ipyn
 Additionally, you can give it a try yourself by clicking the Binder button below:
 
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/choldgraf/nbclean/master?filepath=examples%2Fmodify_notebooks.ipynb)
+
+## Thanks
+
+Thanks to @jhamrick and the [nbgrader](https://github.com/jupyter/nbgrader) project, which was
+the initial inspiration for this. You should check it out if you want a more fully-featured
+grading solution!
