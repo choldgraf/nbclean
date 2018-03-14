@@ -9,9 +9,14 @@ path_notebook = path + '/../../examples/test_notebooks/test_notebook.ipynb'
 
 # Clear different parts of the notebook cells based on tags
 ntbk = nbc.NotebookCleaner(path_notebook)
-ntbk.clear(output=True, tag='hide_output')
-ntbk.clear(output=False, content=True, tag='hide_content')
-ntbk.clear(output=False, stderr=True, tag='hide_stderr')
+ntbk.clear(kind='output', tag='hide_output')
+ntbk.clear(kind='content', tag='hide_content')
+ntbk.clear(kind=['stderr'], tag='hide_stderr')
+
+with pytest.raises(ValueError):
+    ntbk.clear(kind='foo')
+with pytest.raises(ValueError):
+    ntbk.clear(kind=[])
 
 # Removing entire cells
 ntbk.remove_cells(tag='remove')
@@ -43,7 +48,7 @@ def test_nbclean():
                        for output in cell['outputs'])
         assert 'remove' not in tags
 
-        # Text replacing 
+        # Text replacing
         if "# First we'll create 'a'" in cell['source']:
             assert '### SOLUTION BEGIN' not in cell['source']
 

@@ -25,44 +25,48 @@ class NotebookCleaner(object):
             s += '\n' + str(pre)
         return s
 
-    def clear(self, content=False, output=False, output_image=False,
-              output_text=False, stderr=False, tag=None):
+    def clear(self, kind, tag=None):
         """Clear the components of a notebook cell.
 
         Parameters
         ----------
-        content : bool
-            Whether to clear the content of cells.
-        output : bool
-            Whether to clear the entire output of cells.
-        output_text : bool
-            Whether to clear the text output of cells.
-        output_image : bool
-            Whether to clear the image output of cells.
-        stderr : bool
-            Whether to clear the stderr of cells.
+        kind : string | list of strings
+            The elements of the notebook you wish to clear. Must be one of:
+                "content": the content of cells.
+                "output": the entire output of cells.
+                "output_text": the text output of cells.
+                "output_image": the image output of cells.
+                "stderr": the stderr of cells.
+            If a list, must contain one or more of the above strings.
         tag : string | None
             Only apply clearing to cells with a certain tag. If
             None, apply clearing to all cells.
         """
-        if not any([output, output_image, output_text, content, stderr]):
-            raise ValueError("At least of the clear options must be True.")
+        ALLOWED_KINDS = ['content', 'output', 'output_text',
+                         'output_image', 'stderr']
+        if isinstance(kind, str):
+            kind = [kind]
+        if not isinstance(kind, list) or len(kind) == 0:
+            raise ValueError('kind must be a list of at least one string. All '
+                             'strings must be one of {}'.format(ALLOWED_KINDS))
+        if any(ii not in ALLOWED_KINDS for ii in kind):
+            raise ValueError('Unknown kind found. kind must be one of {}'.format(ALLOWED_KINDS))
+        kwargs = {key: key in kind for key in ALLOWED_KINDS}
+
         # See if the cell matches the string
-        pre = ClearCells(content=content, output=output,
-                         output_text=output_text, output_image=output_image,
-                         stderr=stderr, tag=str(tag))
+        pre = ClearCells(tag=str(tag), **kwargs)
         self.ntbk = pre.preprocess(self.ntbk, {})[0]
         self.preprocessors.append(pre)
         return self
 
     def remove_cells(self, tag):
-        """Remove cells that contain a specific string.
+        """Remove cells that match a given tag.
 
         Parameters
         ----------
-        match_text : str
-            A string to search for in input cells. Any cells with the
-            `match_text` inside will be removed.
+        tag : str
+            A string to search for in cell tags cells. Any cells with the
+            tag inside will be removed.
         """
         # See if the cell matches the string
         pre = RemoveCells(tag=tag)
