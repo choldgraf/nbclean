@@ -10,19 +10,34 @@ class RemoveCells(NbGraderPreprocessor):
     """
 
     tag = Unicode("None")
+    empty = Bool(False)
 
     def preprocess(self, nb, resources):
-
+        if self.tag == 'None' and self.empty is False:
+            raise ValueError("Either `tag` or `empty` must be used.")
         new_cells = []
         for ii, cell in enumerate(nb['cells']):
+            is_empty = len(cell['source']) == 0
             if self.tag != 'None':
-                tags = cell['metadata'].get('tags', [])
-                # Only keep the cell if the tag doesn't match
-                if self.tag not in tags:
-                    new_cells.append(cell)
+                if self.tag in cell['metadata'].get('tags', []):
+                    # Skip appending the cell if the tag matches
+                    if self.empty:
+                        if is_empty:
+                            continue
+                    else:
+                        continue
+            elif self.empty and is_empty:
+                continue
+            # If we didn't trigger anything above, append the cell to keep it
+            new_cells.append(cell)
         nb['cells'] = new_cells
         return nb, resources
 
+    def __repr__(self):
+        s = "<RemoveCells> Tag: {}".format(self.tag)
+        if self.empty:
+            s += ' | Remove if empty'
+        return s
 
 class ClearCells(NbGraderPreprocessor):
     """A helper class to remove cells from a notebook.
