@@ -59,17 +59,20 @@ class NotebookCleaner(object):
         self.preprocessors.append(pre)
         return self
 
-    def remove_cells(self, tag):
+    def remove_cells(self, tag=None, empty=False):
         """Remove cells that match a given tag.
 
         Parameters
         ----------
-        tag : str
+        tag : str | None
             A string to search for in cell tags cells. Any cells with the
             tag inside will be removed.
+        empty : bool
+            Whether to remove any cell that is empty.
         """
         # See if the cell matches the string
-        pre = RemoveCells(tag=tag)
+        tag = 'None' if tag is None else tag
+        pre = RemoveCells(tag=tag, empty=empty)
         self.ntbk = pre.preprocess(self.ntbk, {})[0]
         self.preprocessors.append(pre)
         return self

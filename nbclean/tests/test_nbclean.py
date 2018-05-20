@@ -20,6 +20,8 @@ with pytest.raises(ValueError):
 
 # Removing entire cells
 ntbk.remove_cells(tag='remove')
+ntbk.remove_cells(tag='remove_if_empty', empty=True)
+
 
 # Replacing text
 text_replace_begin = '### SOLUTION BEGIN'
@@ -46,6 +48,8 @@ def test_nbclean():
         if 'hide_stderr' in tags:
             assert all('stderr' != output.get('name', '')
                        for output in cell['outputs'])
+        if 'remove_if_empty' in tags:
+            assert len(cell['source']) != 0
         assert 'remove' not in tags
 
         # Text replacing
