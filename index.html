@@ -1,0 +1,141 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>nbclean &#8212; nbclean 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="nbclean">
+<span id="nbclean"></span><h1>nbclean<a class="headerlink" href="#nbclean" title="Permalink to this headline">¶</a></h1>
+<p>A collection of tools to preprocess, modify, and otherwise clean up Jupyter Notebooks.</p>
+<p><img src="_static/images/demo.png" width=700px /></p>
+<div class="section" id="installation">
+<span id="installation"></span><h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>You can install <code class="docutils literal notranslate"><span class="pre">nbclean</span></code> with pip:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install nbclean
+</pre></div>
+</div>
+</div>
+<div class="section" id="usage">
+<span id="usage"></span><h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">nbclean</span></code> to “clean up” Jupyter notebooks, including:</p>
+<ul class="simple">
+<li>Clear cell outputs, cell content, or components of cell outputs.</li>
+<li>Replace text in cells with new text of your choosing.</li>
+<li>Filter the above operations by the presence of <strong>cell tags</strong>.</li>
+</ul>
+<p>The primary feature of <code class="docutils literal notranslate"><span class="pre">nbclean</span></code> is the <code class="docutils literal notranslate"><span class="pre">NotebookCleaner</span></code> class, which performs
+the above actions on a notebook according to tags that are in each cell’s
+metadata.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clear different parts of the notebook cells based on tags</span>
+<span class="n">ntbk</span> <span class="o">=</span> <span class="n">nbc</span><span class="o">.</span><span class="n">NotebookCleaner</span><span class="p">(</span><span class="n">path_notebook</span><span class="p">)</span>
+<span class="n">ntbk</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;hide_output&#39;</span><span class="p">)</span>
+<span class="n">ntbk</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;hide_content&#39;</span><span class="p">)</span>
+<span class="n">ntbk</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;stderr&#39;</span><span class="p">],</span> <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;hide_stderr&#39;</span><span class="p">)</span>
+
+<span class="c1"># Removing entire cells</span>
+<span class="n">ntbk</span><span class="o">.</span><span class="n">remove_cells</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">&#39;remove&#39;</span><span class="p">)</span>
+<span class="n">ntbk</span><span class="o">.</span><span class="n">remove_cells</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">&#39;remove_if_empty&#39;</span><span class="p">,</span> <span class="n">empty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ntbk</span><span class="o">.</span><span class="n">remove_cells</span><span class="p">(</span><span class="n">search_text</span><span class="o">=</span><span class="s2">&quot;# HIDDEN&quot;</span><span class="p">)</span>
+
+<span class="c1"># Replacing text</span>
+<span class="n">text_replace_begin</span> <span class="o">=</span> <span class="s1">&#39;### SOLUTION BEGIN&#39;</span>
+<span class="n">text_replace_end</span> <span class="o">=</span> <span class="s1">&#39;### SOLUTION END&#39;</span>
+<span class="n">ntbk</span><span class="o">.</span><span class="n">replace_text</span><span class="p">(</span><span class="n">text_replace_begin</span><span class="p">,</span> <span class="n">text_replace_end</span><span class="p">)</span>
+
+<span class="n">ntbk</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path_notebook_cleaned</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example">
+<span id="example"></span><h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>For an example, the following two notebooks show off nbclean’s functionality:</p>
+<ul class="simple">
+<li><a class="reference external" href="examples/test_notebooks/test_notebook.ipynb">this is a sample notebook</a> that has a number of
+cells marked-up with <code class="docutils literal notranslate"><span class="pre">nbclean</span></code> syntax.</li>
+<li><a class="reference external" href="examples/modify_notebooks.ipynb">this notebook uses nbclean</a> to clean up the notebook above..</li>
+</ul>
+<p>Additionally, you can give it a try yourself by clicking the Binder button below:</p>
+<p><a class="reference external" href="https://mybinder.org/v2/gh/choldgraf/nbclean/master?filepath=examples%2Fmodify_notebooks.ipynb"><img alt="Binder" src="https://mybinder.org/badge.svg" /></a></p>
+</div>
+<div class="section" id="developers">
+<span id="developers"></span><h2>Developers<a class="headerlink" href="#developers" title="Permalink to this headline">¶</a></h2>
+<p>You can find the <a class="reference external" href="https://github.com/choldgraf/nbclean">source repository for nbclean here</a>.</p>
+</div>
+<div class="section" id="thanks">
+<span id="thanks"></span><h2>Thanks<a class="headerlink" href="#thanks" title="Permalink to this headline">¶</a></h2>
+<p>Thanks to <a class="reference external" href="https://github.com/jhamrick">jhamrick</a> and the <a class="reference external" href="https://github.com/jupyter/nbgrader">nbgrader</a> project, which was
+the initial inspiration for this. You should check it out if you want a more fully-featured
+grading solution!</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Chris Holdgraf.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/index.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
