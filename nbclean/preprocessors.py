@@ -10,16 +10,25 @@ class RemoveCells(NbGraderPreprocessor):
     """
 
     tag = Unicode("None")
+    tag = Unicode("None")
     empty = Bool(False)
 
     def preprocess(self, nb, resources):
-        if self.tag == 'None' and self.empty is False:
-            raise ValueError("Either `tag` or `empty` must be used.")
+        if self.tag == 'None' and self.empty is False and self.search_text == 'None':
+            raise ValueError("One of `tag`, `empty`, or `search_text` must be used.")
         new_cells = []
         for ii, cell in enumerate(nb['cells']):
             is_empty = len(cell['source']) == 0
             if self.tag != 'None':
                 if self.tag in cell['metadata'].get('tags', []):
+                    # Skip appending the cell if the tag matches
+                    if self.empty:
+                        if is_empty:
+                            continue
+                    else:
+                        continue
+            elif self.search_text != 'None':
+                if self.search_text in cell['source']:
                     # Skip appending the cell if the tag matches
                     if self.empty:
                         if is_empty:

@@ -14,7 +14,8 @@ class NotebookCleaner(object):
     ntbk : string | instance of NotebookNode
         The input notebook.
     """
-    def __init__(self, ntbk):
+    def __init__(self, ntbk, verbose=False):
+        self._verbose = verbose
         self.ntbk = _check_nb_file(ntbk)
         self.preprocessors = []
 
@@ -59,7 +60,7 @@ class NotebookCleaner(object):
         self.preprocessors.append(pre)
         return self
 
-    def remove_cells(self, tag=None, empty=False):
+    def remove_cells(self, tag=None, empty=False, search_text=None):
         """Remove cells that match a given tag.
 
         Parameters
@@ -69,10 +70,15 @@ class NotebookCleaner(object):
             tag inside will be removed.
         empty : bool
             Whether to remove any cell that is empty.
+        search_text : str | None
+            A string to search for within cells. Any cells with this string
+            inside will be removed.
         """
         # See if the cell matches the string
         tag = 'None' if tag is None else tag
-        pre = RemoveCells(tag=tag, empty=empty)
+        search_text = 'None' if search_text is None else search_text
+
+        pre = RemoveCells(tag=tag, empty=empty, search_text=search_text)
         self.ntbk = pre.preprocess(self.ntbk, {})[0]
         self.preprocessors.append(pre)
         return self
@@ -124,7 +130,8 @@ class NotebookCleaner(object):
             The path for saving the file.
         """
         dir_save = os.path.dirname(path_save)
-        print('Saving to {}'.format(path_save))
+        if self._verbose is True:
+            print('Saving to {}'.format(path_save))
         if not os.path.isdir(dir_save):
             os.makedirs(dir_save)
         nbf.write(self.ntbk, path_save)

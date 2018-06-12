@@ -23,8 +23,33 @@ The primary feature of `nbclean` is the `NotebookCleaner` class, which performs
 the above actions on a notebook according to tags that are in each cell's
 metadata.
 
-See the [sample teacher notebook](examples/test_notebooks/test_notebook.ipynb) and
-corresponding [nbclean notebook that modifies it](examples/modify_notebooks.ipynb).
+```
+# Clear different parts of the notebook cells based on tags
+ntbk = nbc.NotebookCleaner(path_notebook)
+ntbk.clear(kind='output', tag='hide_output')
+ntbk.clear(kind='content', tag='hide_content')
+ntbk.clear(kind=['stderr'], tag='hide_stderr')
+
+# Removing entire cells
+ntbk.remove_cells(tag='remove')
+ntbk.remove_cells(tag='remove_if_empty', empty=True)
+ntbk.remove_cells(search_text="# HIDDEN")
+
+# Replacing text
+text_replace_begin = '### SOLUTION BEGIN'
+text_replace_end = '### SOLUTION END'
+ntbk.replace_text(text_replace_begin, text_replace_end)
+
+ntbk.save(path_notebook_cleaned)
+```
+
+## Example
+
+For an example, the following two notebooks show off nbclean's functionality:
+
+* [this is a sample notebook](examples/test_notebooks/test_notebook.ipynb) that has a number of
+  cells marked-up with `nbclean` syntax.
+* [this notebook uses nbclean](examples/modify_notebooks.ipynb) to clean up the notebook above..
 
 Additionally, you can give it a try yourself by clicking the Binder button below:
 

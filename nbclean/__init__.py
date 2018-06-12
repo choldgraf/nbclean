@@ -1,6 +1,6 @@
 """Tools for preprocessing and cleaning Jupyter Notebooks."""
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 from .clean import NotebookCleaner
 from .run import run_notebook_directory, run_notebook
