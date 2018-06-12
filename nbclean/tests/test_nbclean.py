@@ -5,7 +5,7 @@ import os
 # We'll use the test notebook in `examples`
 path = os.path.dirname(__file__)
 path_notebook = path + '/../../examples/test_notebooks/test_notebook.ipynb'
-
+HIDE_TEXT = '# HIDDEN'
 
 # Clear different parts of the notebook cells based on tags
 ntbk = nbc.NotebookCleaner(path_notebook)
@@ -21,7 +21,7 @@ with pytest.raises(ValueError):
 # Removing entire cells
 ntbk.remove_cells(tag='remove')
 ntbk.remove_cells(tag='remove_if_empty', empty=True)
-
+ntbk.remove_cells(search_text=HIDE_TEXT)
 
 # Replacing text
 text_replace_begin = '### SOLUTION BEGIN'
@@ -51,6 +51,7 @@ def test_nbclean():
         if 'remove_if_empty' in tags:
             assert len(cell['source']) != 0
         assert 'remove' not in tags
+        assert HIDE_TEXT not in cell['source']
 
         # Text replacing
         if "# First we'll create 'a'" in cell['source']:
