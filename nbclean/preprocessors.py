@@ -1,3 +1,6 @@
+import hashlib
+import os
+
 from traitlets import Unicode, Bool
 from nbgrader.preprocessors import NbGraderPreprocessor
 
@@ -47,6 +50,47 @@ class RemoveCells(NbGraderPreprocessor):
         if self.empty:
             s += ' | Remove if empty'
         return s
+
+
+class ConvertCells:
+    """A helper class to convert cells in a notebook to oktests.
+
+    This should not be used directly, instead, use the
+    NotebookCleaner class.
+    """
+
+    def __init__(self, tag, oktest_path):
+        self.tag = tag
+        self.oktest_path = oktest_path
+
+    def preprocess(self, nb, resources):
+        os.makedirs(self.oktest_path, exist_ok=True)
+
+        new_cells = []
+        for cell in nb['cells']:
+            cell_tags = cell['metadata'].get('tags', [])
+            if self.tag in cell_tags:
+                # convert cell
+                source = cell['source']
+                print(source)
+                h = hashlib.md5(source.encode('utf-8')).hexdigest()[:7]
+                oktest = os.path.join(self.oktest_path, 'q-%s.py' % h)
+                with open(oktest, 'w') as f:
+                    f.write(source)
+
+                cell['source'] = 'check("%s")' % oktest
+                new_cells.append(cell)
+
+            else:
+                new_cells.append(cell)
+
+        nb['cells'] = new_cells
+        return nb, resources
+
+    def __repr__(self):
+        s = "<ConvertCells> Tag: {}".format(self.tag)
+        return s
+
 
 class ClearCells(NbGraderPreprocessor):
     """A helper class to remove cells from a notebook.

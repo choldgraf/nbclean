@@ -2,7 +2,7 @@
 import nbformat as nbf
 import os
 from nbgrader.preprocessors import ClearSolutions
-from .preprocessors import RemoveCells, ClearCells
+from .preprocessors import RemoveCells, ClearCells, ConvertCells
 from .utils import _check_nb_file
 
 
@@ -83,6 +83,24 @@ class NotebookCleaner(object):
         self.preprocessors.append(pre)
         return self
 
+    def create_oktests(self, tag, oktest_path):
+        """Create oktests for cells that match a given tag.
+
+        Parameters
+        ----------
+        tag : str
+            Cells tagged with this string will be converted into oktests
+        oktest_path : str
+            Path at which each oktest will be created
+        """
+        # See if the cell matches the string
+        tag = 'None' if tag is None else tag
+
+        pre = ConvertCells(tag=tag, oktest_path=oktest_path)
+        self.ntbk = pre.preprocess(self.ntbk, {})[0]
+        self.preprocessors.append(pre)
+        return self
+
     def replace_text(self, text_replace_begin=u'### SOLUTION BEGIN',
                      text_replace_end=u'### SOLUTION END',
                      replace_code=None, replace_md=None):
@@ -132,6 +150,7 @@ class NotebookCleaner(object):
         dir_save = os.path.dirname(path_save)
         if self._verbose is True:
             print('Saving to {}'.format(path_save))
-        if not os.path.isdir(dir_save):
+        # if we are saving to a subdirectory make sure it exists
+        if dir_save and not os.path.isdir(dir_save):
             os.makedirs(dir_save)
         nbf.write(self.ntbk, path_save)
