@@ -59,9 +59,27 @@ class ConvertCells:
     NotebookCleaner class.
     """
 
-    def __init__(self, tag, oktest_path):
+    template = '''
+test = {
+  'name': 'test_valid',
+  'points': 1,
+  'suites': [
+    {
+      'cases': [{'code': r"""
+%s
+      """},
+      ]
+    }
+  ]
+}
+'''
+
+    def __init__(self, tag, oktest_path, notebook_dir):
         self.tag = tag
+        # path relative to the output notebook
         self.oktest_path = oktest_path
+        # path to the notebook
+        self.notebook_dir = notebook_dir
 
     def preprocess(self, nb, resources):
         os.makedirs(self.oktest_path, exist_ok=True)
@@ -75,8 +93,9 @@ class ConvertCells:
                 print(source)
                 h = hashlib.md5(source.encode('utf-8')).hexdigest()[:7]
                 oktest = os.path.join(self.oktest_path, 'q-%s.py' % h)
-                with open(oktest, 'w') as f:
-                    f.write(source)
+                with open(os.path.join(self.notebook_dir, oktest), 'w') as f:
+                    lines = ["      >>> " + l for l in source.split("\n") if l]
+                    f.write(self.template % '\n'.join(lines))
 
                 cell['source'] = 'check("%s")' % oktest
                 new_cells.append(cell)

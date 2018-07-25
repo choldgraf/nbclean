@@ -17,6 +17,7 @@ class NotebookCleaner(object):
     def __init__(self, ntbk, verbose=False):
         self._verbose = verbose
         self.ntbk = _check_nb_file(ntbk)
+        self.notebook_dir = os.path.dirname(ntbk)
         self.preprocessors = []
 
     def __repr__(self):
@@ -96,7 +97,9 @@ class NotebookCleaner(object):
         # See if the cell matches the string
         tag = 'None' if tag is None else tag
 
-        pre = ConvertCells(tag=tag, oktest_path=oktest_path)
+        pre = ConvertCells(tag=tag,
+                           oktest_path=oktest_path,
+                           notebook_dir=self.notebook_dir)
         self.ntbk = pre.preprocess(self.ntbk, {})[0]
         self.preprocessors.append(pre)
         return self
