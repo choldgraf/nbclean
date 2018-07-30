@@ -17,7 +17,6 @@ class NotebookCleaner(object):
     def __init__(self, ntbk, verbose=False):
         self._verbose = verbose
         self.ntbk = _check_nb_file(ntbk)
-        self.notebook_dir = os.path.dirname(ntbk)
         self.preprocessors = []
 
     def __repr__(self):
@@ -84,22 +83,26 @@ class NotebookCleaner(object):
         self.preprocessors.append(pre)
         return self
 
-    def create_oktests(self, tag, oktest_path):
-        """Create oktests for cells that match a given tag.
+    def create_oktests(self, tag, oktest_path, base_dir):
+        """Create oktests for code cells that are tagged with `tag`.
+
+        The cell source will be used as the code for the doctest that is
+        created. This function assumes that `oktest_path` is a directory
+        relative to the final notebook directory specified in `base_dir`.
 
         Parameters
         ----------
         tag : str
             Cells tagged with this string will be converted into oktests
         oktest_path : str
-            Path at which each oktest will be created
+            Path at which each oktests will be created. We assume this is a
+            path relative to where the processed notebook will be stored.
+        base_dir : str
+            Path at which the processed notebook will be stored.
         """
-        # See if the cell matches the string
-        tag = 'None' if tag is None else tag
-
         pre = ConvertCells(tag=tag,
                            oktest_path=oktest_path,
-                           notebook_dir=self.notebook_dir)
+                           base_dir=base_dir)
         self.ntbk = pre.preprocess(self.ntbk, {})[0]
         self.preprocessors.append(pre)
         return self
@@ -154,6 +157,6 @@ class NotebookCleaner(object):
         if self._verbose is True:
             print('Saving to {}'.format(path_save))
         # if we are saving to a subdirectory make sure it exists
-        if dir_save and not os.path.isdir(dir_save):
+        if dir_save and not os.path.exists(dir_save):
             os.makedirs(dir_save)
         nbf.write(self.ntbk, path_save)

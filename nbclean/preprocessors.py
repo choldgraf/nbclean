@@ -74,34 +74,41 @@ test = {
 }
 '''
 
-    def __init__(self, tag, oktest_path, notebook_dir):
+    def __init__(self, tag, oktest_path, base_dir):
         self.tag = tag
-        # path relative to the output notebook
+        # path at which to store oktests, this will be created as a subdirectory
+        # of `base_dir`
         self.oktest_path = oktest_path
-        # path to the notebook
-        self.notebook_dir = notebook_dir
+        if os.path.isabs(self.oktest_path):
+            raise RuntimeError("Expected `oktest_path` to be a path relative"
+                               " to `base_dir`, got '%s' instead." % oktest_path)
+        # path at which the notebook will be stored
+        self.base_dir = base_dir
 
     def preprocess(self, nb, resources):
-        os.makedirs(self.oktest_path, exist_ok=True)
+        os.makedirs(os.path.join(self.base_dir, self.oktest_path),
+                    exist_ok=True)
 
         new_cells = []
         for cell in nb['cells']:
             cell_tags = cell['metadata'].get('tags', [])
-            if self.tag in cell_tags:
-                # convert cell
+            if self.tag in cell_tags and cell['cell_type'] == 'code':
+                # convert cell to oktest
                 source = cell['source']
-                print(source)
+
                 h = hashlib.md5(source.encode('utf-8')).hexdigest()[:7]
                 oktest = os.path.join(self.oktest_path, 'q-%s.py' % h)
-                with open(os.path.join(self.notebook_dir, oktest), 'w') as f:
+
+                with open(os.path.join(self.base_dir, oktest), 'w') as f:
                     lines = ["      >>> " + l for l in source.split("\n") if l]
                     f.write(self.template % '\n'.join(lines))
 
                 cell['source'] = 'check("%s")' % oktest
-                new_cells.append(cell)
+                # clear outputs and execution count
+                cell['outputs'] = []
+                cell['execution_count'] = None
 
-            else:
-                new_cells.append(cell)
+            new_cells.append(cell)
 
         nb['cells'] = new_cells
         return nb, resources
