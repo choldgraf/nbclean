@@ -10,7 +10,7 @@ class RemoveCells(NbGraderPreprocessor):
     """
 
     tag = Unicode("None")
-    tag = Unicode("None")
+    search_text = Unicode("None")
     empty = Bool(False)
 
     def preprocess(self, nb, resources):
@@ -61,6 +61,7 @@ class ClearCells(NbGraderPreprocessor):
     content = Bool(False)
     stderr = Bool(True)
     tag = Unicode('None')
+    search_text = Unicode("None")
 
     def preprocess(self, nb, resources):
         for cell in nb['cells']:
@@ -68,6 +69,9 @@ class ClearCells(NbGraderPreprocessor):
             if self.tag != 'None':
                 tags = cell['metadata'].get('tags', [])
                 if self.tag not in tags:
+                    continue
+            elif self.search_text != 'None':
+                if self.search_text not in cell['source']:
                     continue
 
             # Clear all cell output
