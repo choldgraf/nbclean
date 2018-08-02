@@ -83,18 +83,20 @@ class NotebookCleaner(object):
         self.preprocessors.append(pre)
         return self
 
-    def create_oktests(self, tag, oktest_path, base_dir):
-        """Create oktests for code cells that are tagged with `tag`.
+    def create_tests(self, tag, oktest_path, base_dir):
+        """Create tests for code cells that are tagged with `tag`.
 
         The cell source will be used as the code for the doctest that is
-        created. This function assumes that `oktest_path` is a directory
+        created. This function assumes that `test_path` is a directory
         relative to the final notebook directory specified in `base_dir`.
+
+        Tests are created using the oktest format.
 
         Parameters
         ----------
         tag : str
             Cells tagged with this string will be converted into oktests
-        oktest_path : str
+        test_path : str
             Path at which each oktests will be created. We assume this is a
             path relative to where the processed notebook will be stored.
         base_dir : str
