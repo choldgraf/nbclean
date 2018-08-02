@@ -26,7 +26,7 @@ class NotebookCleaner(object):
             s += '\n' + str(pre)
         return s
 
-    def clear(self, kind, tag=None):
+    def clear(self, kind, tag=None, search_text=None, clear=None):
         """Clear the components of a notebook cell.
 
         Parameters
@@ -42,6 +42,9 @@ class NotebookCleaner(object):
         tag : string | None
             Only apply clearing to cells with a certain tag. If
             None, apply clearing to all cells.
+        search_text : str | None
+            A string to search for within cells. Any cells with this string
+            inside will be removed.
         """
         ALLOWED_KINDS = ['content', 'output', 'output_text',
                          'output_image', 'stderr']
@@ -55,7 +58,7 @@ class NotebookCleaner(object):
         kwargs = {key: key in kind for key in ALLOWED_KINDS}
 
         # See if the cell matches the string
-        pre = ClearCells(tag=str(tag), **kwargs)
+        pre = ClearCells(tag=str(tag), search_text=str(search_text), **kwargs)
         self.ntbk = pre.preprocess(self.ntbk, {})[0]
         self.preprocessors.append(pre)
         return self
