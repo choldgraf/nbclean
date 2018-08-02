@@ -2,7 +2,7 @@
 import nbformat as nbf
 import os
 from nbgrader.preprocessors import ClearSolutions
-from .preprocessors import RemoveCells, ClearCells
+from .preprocessors import RemoveCells, ClearCells, ConvertCells
 from .utils import _check_nb_file
 
 
@@ -83,6 +83,32 @@ class NotebookCleaner(object):
         self.preprocessors.append(pre)
         return self
 
+    def create_tests(self, tag, oktest_path, base_dir):
+        """Create tests for code cells that are tagged with `tag`.
+
+        The cell source will be used as the code for the doctest that is
+        created. This function assumes that `test_path` is a directory
+        relative to the final notebook directory specified in `base_dir`.
+
+        Tests are created using the oktest format.
+
+        Parameters
+        ----------
+        tag : str
+            Cells tagged with this string will be converted into oktests
+        test_path : str
+            Path at which each oktests will be created. We assume this is a
+            path relative to where the processed notebook will be stored.
+        base_dir : str
+            Path at which the processed notebook will be stored.
+        """
+        pre = ConvertCells(tag=tag,
+                           oktest_path=oktest_path,
+                           base_dir=base_dir)
+        self.ntbk = pre.preprocess(self.ntbk, {})[0]
+        self.preprocessors.append(pre)
+        return self
+
     def replace_text(self, text_replace_begin=u'### SOLUTION BEGIN',
                      text_replace_end=u'### SOLUTION END',
                      replace_code=None, replace_md=None):
@@ -132,6 +158,7 @@ class NotebookCleaner(object):
         dir_save = os.path.dirname(path_save)
         if self._verbose is True:
             print('Saving to {}'.format(path_save))
-        if not os.path.isdir(dir_save):
+        # if we are saving to a subdirectory make sure it exists
+        if dir_save and not os.path.exists(dir_save):
             os.makedirs(dir_save)
         nbf.write(self.ntbk, path_save)
