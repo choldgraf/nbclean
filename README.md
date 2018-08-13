@@ -1,5 +1,6 @@
 # nbclean
-A collection of tools to preprocess, modify, and otherwise clean up Jupyter Notebooks.
+[![](https://circleci.com/gh/jupyterhub/the-littlest-jupyterhub.svg?style=shield)](https://circleci.com/gh/choldgraf/nbclean)
+[![](https://codecov.io/gh/jupyterhub/the-littlest-jupyterhub/branch/master/graph/badge.svg)](https://codecov.io/gh/choldgraf/nbclean)
 
 <img src="doc/_static/images/demo.png" width=700px />
 
