@@ -65,9 +65,8 @@ test = {
   'points': 1,
   'suites': [
     {
-      'cases': [{'code': r"""
-%s
-      """},
+      'cases': [
+      %s
       ]
     }
   ]
@@ -100,8 +99,26 @@ test = {
                 oktest = os.path.join(self.oktest_path, 'q-%s.py' % h)
 
                 with open(os.path.join(self.base_dir, oktest), 'w') as f:
-                    lines = ["      >>> " + l for l in source.split("\n") if l]
-                    f.write(self.template % '\n'.join(lines))
+                    case_template = '''{'code': r"""
+%s
+                    """,
+                    'points': %i},'''
+                    cases = []
+                    for block in source.split('\n\n'):
+                        lines = []
+                        points = 1
+                        for l in block.split("\n"):
+                            if l:
+                                if not l.startswith('# POINTS'):
+                                    lines.append(l)
+                                else:
+                                    points = int(l.split(' ')[2])
+
+                        case = case_template % ('\n'.join(lines),
+                                                points)
+                        cases.append(case)
+
+                    f.write(self.template % '\n'.join(cases))
 
                 cell['source'] = 'check("%s")' % oktest
                 # clear outputs and execution count
