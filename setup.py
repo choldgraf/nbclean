@@ -49,4 +49,5 @@ if __name__ == "__main__":
           packages=['nbclean'],
           install_requires=["nbformat", "nbgrader", "numpy", "tqdm"],
           package_data={},
+          entry_points={"console_scripts": ["nbclean = nbclean.cli:main"]},
           scripts=[])

@@ -2,6 +2,7 @@
 import nbformat as nbf
 import os
 from nbgrader.preprocessors import ClearSolutions
+from glob import glob
 from .preprocessors import RemoveCells, ClearCells, ConvertCells
 from .utils import _check_nb_file
 
@@ -165,3 +166,4 @@ class NotebookCleaner(object):
         if dir_save and not os.path.exists(dir_save):
             os.makedirs(dir_save)
         nbf.write(self.ntbk, path_save)
+
