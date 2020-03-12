@@ -1,6 +1,8 @@
 import nbclean as nbc
+from nbclean.cli import run, clear
 import pytest
 import os
+from pathlib import Path
 
 # We'll use the test notebook in `examples`
 path = os.path.dirname(__file__)
@@ -62,6 +64,11 @@ def test_nbclean():
     assert len(cell['outputs']) != 0
     assert any('stderr' == output.get('name', '') for output in cell['outputs'])
     assert len(cell['source']) != 0
+
+def test_cli_funcs():
+    path_ntbk = Path(__file__).with_name("test_ntbk.ipynb")
+    ntbk = run(str(path_ntbk))
+    assert ntbk.cells
 
 if __name__ == '__main__':
     test_nbclean()
