@@ -4,7 +4,7 @@ import os
 from nbgrader.preprocessors import ClearSolutions
 from glob import glob
 from .preprocessors import RemoveCells, ClearCells, ConvertCells
-from .utils import _check_nb_file
+from .utils import _check_nb_file, _find_notebooks
 
 
 class NotebookCleaner(object):
@@ -167,3 +167,13 @@ class NotebookCleaner(object):
             os.makedirs(dir_save)
         nbf.write(self.ntbk, path_save)
 
+
+def clear_notebooks(path, kind, skip=".ipynb_checkpoints", **kwargs):
+    notebooks = _find_notebooks(path, skip)
+    if len(notebooks) == 0:
+        print("Note: no notebooks were found to be cleared.")
+    for path in notebooks:
+        print(f"Clearing {kind} in {path}")
+        cleaner = NotebookCleaner(str(path))
+        cleaner.clear(kind, **kwargs)
+        cleaner.save(str(path))
